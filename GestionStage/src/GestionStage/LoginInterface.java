@@ -1,0 +1,215 @@
+package GestionStage;
+
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
+import javax.swing.JTextField;
+import javax.swing.JPasswordField;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Font;
+import javax.swing.SwingConstants;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import javax.swing.border.BevelBorder;
+
+public class LoginInterface extends JFrame {
+
+	public JPanel contentPane;
+	public JTextField emailTxt;
+	public JPasswordField motdepassTxt;
+	public JLabel loginMessageLabel, emailIcone, mdpIcone, connecterLabel, quitterBtn, logoImg, accueilBtn;
+
+	public LoginInterface() {
+		setUndecorated(true);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 800, 400);
+		contentPane = new JPanel();
+		contentPane.setBackground(new Color(32, 178, 170));
+		contentPane.setBorder(new LineBorder(new Color(0, 128, 128), 2));
+		setContentPane(contentPane);
+		contentPane.setLayout(null);
+		
+		JPanel emailPanel = new JPanel();
+		emailPanel.setBackground(new Color(255, 255, 255));
+		emailPanel.setBounds(247, 193, 300, 40);
+		contentPane.add(emailPanel);
+		emailPanel.setLayout(null);
+		
+		emailTxt = new JTextField();
+		emailTxt.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				if(emailTxt.getText().equals("Email")) {
+					emailTxt.setText("");
+				}
+				else {
+					emailTxt.selectAll();
+				}
+			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				if(emailTxt.getText().equals("")) {
+					emailTxt.setText("Email");
+				}
+			}
+		});
+		emailTxt.setBorder(null);
+		emailTxt.setForeground(new Color(0, 0, 0));
+		emailTxt.setFont(new Font("Arial Black", Font.PLAIN, 11));
+		emailTxt.setText("Email");
+		emailTxt.setBounds(10, 5, 230, 30);
+		emailPanel.add(emailTxt);
+		emailTxt.setColumns(10);
+		
+		emailIcone = new JLabel("");
+		emailIcone.setHorizontalAlignment(SwingConstants.CENTER);
+		emailIcone.setBounds(254, 5, 36, 30);
+		emailPanel.add(emailIcone);
+		emailIcone.setIcon(new ImageIcon(getClass().getResource("emailIcone.png")));
+		
+		JPanel mdsPanel = new JPanel();
+		mdsPanel.setBackground(Color.WHITE);
+		mdsPanel.setBounds(247, 249, 300, 40);
+		contentPane.add(mdsPanel);
+		mdsPanel.setLayout(null);
+		
+		motdepassTxt = new JPasswordField();
+		motdepassTxt.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				if(motdepassTxt.getText().equals("Mot de passe")) {
+					motdepassTxt.setEchoChar('●');
+					motdepassTxt.setText("");
+				}
+				else {
+					motdepassTxt.selectAll();
+				}
+			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				if(motdepassTxt.getText().equals("")) {
+					motdepassTxt.setText("Mot de passe");
+					motdepassTxt.setEchoChar((char)0);
+
+				}
+			}
+		});
+		motdepassTxt.setForeground(new Color(0, 0, 0));
+		motdepassTxt.setFont(new Font("Arial Black", Font.PLAIN, 11));
+		motdepassTxt.setBorder(null);
+		motdepassTxt.setEchoChar((char)0);
+		motdepassTxt.setText("Mot de passe");
+		motdepassTxt.setBounds(10, 5, 230, 30);
+		mdsPanel.add(motdepassTxt);
+		
+		mdpIcone = new JLabel("");
+		mdpIcone.setHorizontalAlignment(SwingConstants.CENTER);
+		mdpIcone.setBounds(254, 5, 36, 30);
+		mdsPanel.add(mdpIcone);
+		mdpIcone.setIcon(new ImageIcon(getClass().getResource("mdpIcone.png")));
+		
+		JPanel loginPanel = new JPanel();
+		loginPanel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
+		loginPanel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(emailTxt.getText().equals("") || emailTxt.getText().equals("Email") || motdepassTxt.getText().equals("") || motdepassTxt.getText().equals("Mot de passe")) {
+					loginMessageLabel.setText("* Merci de remplir tous les champs. "); 
+				}
+				else {
+					String type = CommencerInterface.recupererType();
+					if(Personne.loginUtilisateur(type, emailTxt, motdepassTxt)) {
+						LoginInterface.this.dispose();
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "informations Incorrectes !");
+					}
+				}
+			}
+		});
+		loginPanel.setBackground(new Color(255, 51, 102));
+		loginPanel.setBounds(338, 330, 120, 40);
+		contentPane.add(loginPanel);
+		loginPanel.setLayout(null);
+		
+		connecterLabel = new JLabel("Se connecter");
+		connecterLabel.setBackground(new Color(255, 255, 255));
+		connecterLabel.setForeground(new Color(255, 255, 255));
+		connecterLabel.setFont(new Font("Arial Black", Font.PLAIN, 13));
+		connecterLabel.setBounds(10, 11, 100, 14);
+		loginPanel.add(connecterLabel);
+		
+		quitterBtn = new JLabel("QUITTER");
+		quitterBtn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if(JOptionPane.showConfirmDialog(null,"Êtes-vous sûr de vouloir quitter ? ","confirmation", JOptionPane.YES_NO_OPTION) == 0) {
+					LoginInterface.this.dispose();
+				}
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				quitterBtn.setForeground(Color.RED);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				quitterBtn.setForeground(Color.WHITE);
+
+			}
+		});
+		quitterBtn.setFont(new Font("Arial Black", Font.BOLD, 11));
+		quitterBtn.setForeground(new Color(255, 255, 255));
+		quitterBtn.setBounds(721, 11, 69, 23);
+		contentPane.add(quitterBtn);
+		
+		logoImg = new JLabel("");
+		logoImg.setHorizontalAlignment(SwingConstants.CENTER);
+		logoImg.setBounds(320, 30, 170, 152);
+		contentPane.add(logoImg);
+		logoImg.setIcon(new ImageIcon(getClass().getResource("logo.png")));
+		
+		accueilBtn = new JLabel("ACCUEIL");
+		accueilBtn.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				LoginInterface.this.setVisible(false);
+				CommencerInterface back = new CommencerInterface();
+				back.setVisible(true);
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				accueilBtn.setForeground(Color.RED);
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				accueilBtn.setForeground(Color.WHITE);
+			}
+		});
+		accueilBtn.setForeground(Color.WHITE);
+		accueilBtn.setFont(new Font("Arial Black", Font.BOLD, 11));
+		accueilBtn.setBounds(15, 11, 69, 23);
+		contentPane.add(accueilBtn);
+		
+		loginMessageLabel = new JLabel("");
+		loginMessageLabel.setFont(new Font("Tahoma", Font.ITALIC, 11));
+		loginMessageLabel.setForeground(Color.WHITE);
+		loginMessageLabel.setBounds(250, 305, 300, 15);
+		contentPane.add(loginMessageLabel);
+		setLocationRelativeTo(null);
+	}
+}
